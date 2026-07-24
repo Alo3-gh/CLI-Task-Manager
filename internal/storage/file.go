@@ -2,6 +2,7 @@ package storage
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"task-manager/internal/task"
@@ -39,25 +40,38 @@ func (s *FileStorage) Save(tasks []task.Task) error {
 	return os.WriteFile(s.filePath, data, 0644)
 }
 
-func (s *FileStorage) AddTask(task task.Task) error {
+func (s *FileStorage) AddTask(t task.Task) error {
+	tasks, err := s.Load()
+	if err != nil {
+		return err
+	}
 
-	return nil
+	if len(tasks) > 0 {
+		t.ID = tasks[len(tasks)-1].ID + 1
+	} else {
+		t.ID = 1
+	}
+
+	tasks = append(tasks, t)
+
+	return s.Save(tasks)
 }
 
-func (s *FileStorage) GetAll() error {
-	return nil
+func (s *FileStorage) GetAll() ([]task.Task, error) {
+	return s.Load()
 }
 
-func (s *FileStorage) GetByID(taskId int) error {
-	return nil
-}
+func (s *FileStorage) GetByID(taskId int) (task.Task, error) {
+	tasks, err := s.Load()
+	if err != nil {
+		return task.Task{}, err
+	}
 
-func (s *FileStorage) Update(taskId int) error {
-	return nil
-}
+	for _, t := range tasks {
+		if t.ID == taskId {
+			return t, nil
+		}
+	}
 
-func (s *FileStorage) Delete(taskId int) error {
-	return nil
+	return task.Task{}, fmt.Errorf("Task with id: %d not found", taskId)
 }
-
-// Добавить методы: Add, GetAll, GetByID, Update, Delete

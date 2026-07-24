@@ -1,6 +1,9 @@
 package task
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Status string
 
@@ -28,4 +31,9 @@ func NewTask(title, description string, deadline time.Time) Task {
 		CreatedAt:   time.Now(),
 		Deadline:    deadline,
 	}
+}
+
+func (t *Task) ToString() string {
+	return fmt.Sprintf("ID: %d\nTitle: %s\nDescription: %s\nStatus: %s\nCreatedAt: %s\nDeadline: %s\n",
+		t.ID, t.Title, t.Description, t.Status, t.CreatedAt, t.Deadline)
 }
