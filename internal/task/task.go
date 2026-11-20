@@ -35,7 +35,7 @@ func NewTask(title, description string, deadline time.Time) Task {
 	}
 }
 
-func (t *Task) ToString() string {
+func (t *Task) Print() string {
 	return fmt.Sprintf("\nTask: %d\nTitle: %s\nDescription: %s\nStatus: %s\nCreatedAt: %s\nDeadline: %s\n",
 		t.ID, t.Title, t.Description, t.Status, t.CreatedAt.Format(TaskDateFormat), t.Deadline.Format(TaskDateFormat))
 }

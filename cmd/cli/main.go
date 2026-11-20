@@ -74,8 +74,12 @@ func showAll(storage *storage.FileStorage) error {
 	}
 
 	for _, t := range tasks {
-		fmt.Printf("%v\n", t.ToString())
+		fmt.Printf("%v\n", t.Print())
 	}
+
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Printf("Enter any key to continue...")
+	scanner.Scan()
 
 	return nil
 }
