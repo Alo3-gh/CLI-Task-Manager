@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-
 	"task-manager/internal/task"
 )
 
@@ -24,10 +23,12 @@ func (s *FileStorage) Load() ([]task.Task, error) {
 		}
 		return nil, err
 	}
+
 	var tasks []task.Task
 	if len(data) == 0 {
 		return tasks, nil
 	}
+
 	err = json.Unmarshal(data, &tasks)
 	return tasks, err
 }
@@ -37,6 +38,7 @@ func (s *FileStorage) Save(tasks []task.Task) error {
 	if err != nil {
 		return err
 	}
+
 	return os.WriteFile(s.filePath, data, 0644)
 }
 

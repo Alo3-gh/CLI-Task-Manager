@@ -11,6 +11,13 @@ import (
 	"task-manager/internal/task"
 )
 
+func printMenu() {
+	fmt.Println("\n=== Task Manager ===")
+	fmt.Println("1. Add task")
+	fmt.Println("2. Show tasks")
+	fmt.Println("0. Exit")
+}
+
 func main() {
 	storage := storage.NewFileStorage("tasks.json")
 
@@ -33,29 +40,23 @@ func main() {
 	}
 }
 
-func parseTextInput(scanner *bufio.Scanner, placeholder string) string {
+func scanTextInput(scanner *bufio.Scanner, placeholder string) string {
 	fmt.Printf("Enter %s: ", placeholder)
 	scanner.Scan()
+
 	return strings.TrimSpace(scanner.Text())
 }
 
 func addTask(storage *storage.FileStorage) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	title := parseTextInput(scanner, "title")
-	desc := parseTextInput(scanner, "description")
+	title := scanTextInput(scanner, "title")
+	desc := scanTextInput(scanner, "description")
+	deadlineStr := scanTextInput(scanner, fmt.Sprintf("deadline date(%s)", task.TaskDateFormat))
 
-	deadlineFormat := time.DateOnly
-	deadlineStr := parseTextInput(scanner, fmt.Sprintf("deadline date(%s)", deadlineFormat))
-
-	var deadline time.Time
-	if deadlineStr != "" {
-		d, err := time.Parse(deadlineFormat, deadlineStr)
-		if err != nil {
-			return err
-		}
-
-		deadline = d
+	deadline, err := time.Parse(task.TaskDateFormat, deadlineStr)
+	if err != nil {
+		deadline = time.Now().Add(time.Hour * 24)
 	}
 
 	newTask := task.NewTask(title, desc, deadline)
@@ -73,15 +74,8 @@ func showAll(storage *storage.FileStorage) error {
 	}
 
 	for _, t := range tasks {
-		fmt.Printf("t: %v\n", t.ToString())
+		fmt.Printf("%v\n", t.ToString())
 	}
 
 	return nil
-}
-
-func printMenu() {
-	fmt.Println("\n=== Task Manager ===")
-	fmt.Println("1. Добавить задачу")
-	fmt.Println("2. Список задач")
-	fmt.Println("0. Выход")
 }
