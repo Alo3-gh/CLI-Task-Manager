@@ -1,4 +1,5 @@
 -- +goose Up
+-- +goose StatementBegin
 CREATE TABLE tasks (
     id          integer PRIMARY KEY,
     title       TEXT NOT NULL,
@@ -15,6 +16,9 @@ COMMENT ON COLUMN tasks.description IS 'Описание задачи';
 COMMENT ON COLUMN tasks.status IS 'Статус задачи';
 COMMENT ON COLUMN tasks.created_at IS 'Дата создания';
 COMMENT ON COLUMN tasks.deadline IS 'Дата окончания';
+-- +goose StatementEnd
 
 -- +goose Down
+-- +goose StatementBegin
 DROP TABLE tasks;
+-- +goose StatementEnd
