@@ -19,26 +19,8 @@ services:
     networks:
       - db_network
 
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4:6.19
-    depends_on:
-      - postgres
-    environment:
-        PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-        PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-        PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    ports:
-      - ${PGADMIN_PORT}:80
-    networks:
-      - db_network
-    restart: unless-stopped
-
 volumes:
     pgdata:
-    pgadmin:
 
 networks:
     db_network:
