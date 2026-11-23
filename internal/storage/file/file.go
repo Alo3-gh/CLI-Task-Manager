@@ -1,21 +1,24 @@
-package storage
+package storage_file
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
+	"sync"
 	"task-manager/internal/task"
 )
 
-type FileStorage struct {
+type FileTaskStorage struct {
 	filePath string
+	mu       sync.Mutex
 }
 
-func NewFileStorage(path string) *FileStorage {
-	return &FileStorage{filePath: path}
+func New(path string) *FileTaskStorage {
+	return &FileTaskStorage{filePath: path}
 }
 
-func (s *FileStorage) Load() ([]task.Task, error) {
+func (s *FileTaskStorage) read() ([]task.Task, error) {
 	data, err := os.ReadFile(s.filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -33,7 +36,7 @@ func (s *FileStorage) Load() ([]task.Task, error) {
 	return tasks, err
 }
 
-func (s *FileStorage) Save(tasks []task.Task) error {
+func (s *FileTaskStorage) write(tasks []task.Task) error {
 	data, err := json.MarshalIndent(tasks, "", "  ")
 	if err != nil {
 		return err
@@ -42,8 +45,11 @@ func (s *FileStorage) Save(tasks []task.Task) error {
 	return os.WriteFile(s.filePath, data, 0644)
 }
 
-func (s *FileStorage) AddTask(t task.Task) error {
-	tasks, err := s.Load()
+func (s *FileTaskStorage) Create(ctx context.Context, t *task.Task) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	tasks, err := s.read()
 	if err != nil {
 		return err
 	}
@@ -54,17 +60,17 @@ func (s *FileStorage) AddTask(t task.Task) error {
 		t.ID = 1
 	}
 
-	tasks = append(tasks, t)
+	tasks = append(tasks, *t)
 
-	return s.Save(tasks)
+	return s.write(tasks)
 }
 
-func (s *FileStorage) GetAll() ([]task.Task, error) {
-	return s.Load()
+func (s *FileTaskStorage) GetAll() ([]task.Task, error) {
+	return s.read()
 }
 
-func (s *FileStorage) GetByID(taskId int) (task.Task, error) {
-	tasks, err := s.Load()
+func (s *FileTaskStorage) GetByID(taskId int) (task.Task, error) {
+	tasks, err := s.read()
 	if err != nil {
 		return task.Task{}, err
 	}

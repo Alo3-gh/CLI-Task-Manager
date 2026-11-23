@@ -1,12 +1,12 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE tasks (
-    id          integer PRIMARY KEY,
+    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title       TEXT NOT NULL,
-    description TEXT,
-    status      TEXT NOT NULL,
-    created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    deadline    TIMESTAMP WITH TIME ZONE
+    description TEXT NOT NULL DEFAULT '',
+    status      TEXT,
+    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    deadline    TIMESTAMP
 );
 
 COMMENT ON TABLE tasks IS 'Таблица задач';
